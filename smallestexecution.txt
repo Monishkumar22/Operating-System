@@ -1,0 +1,60 @@
+#include <stdio.h>
+
+struct Process {
+    int processID;
+    int arrivalTime;
+    int executionTime;
+};
+
+void scheduleSJF(struct Process processes[], int n) {
+    int currentTime = 0;
+    int completed = 0;
+    int smallestIndex;
+    int smallestExecutionTime;
+
+    while (completed < n) {
+        smallestExecutionTime = -1;
+
+        // Find the process with the smallest execution time among the waiting processes
+        for (int i = 0; i < n; i++) {
+            if (processes[i].arrivalTime <= currentTime && processes[i].executionTime > 0) {
+                if (smallestExecutionTime == -1 || processes[i].executionTime < smallestExecutionTime) {
+                    smallestExecutionTime = processes[i].executionTime;
+                    smallestIndex = i;
+                }
+            }
+        }
+
+        // If no waiting process found, increment the current time
+        if (smallestExecutionTime == -1) {
+            currentTime++;
+            continue;
+        }
+
+        // Execute the selected process
+        processes[smallestIndex].executionTime--;
+        currentTime++;
+
+        // Check if the process is completed
+        if (processes[smallestIndex].executionTime == 0) {
+            printf("Process %d completed at time %d\n", processes[smallestIndex].processID, currentTime);
+            completed++;
+        }
+    }
+}
+
+int main() {
+    // Example processes
+    struct Process processes[] = {
+        {1, 0, 5},
+        {2, 2, 3},
+        {3, 3, 8},
+        {4, 5, 2}
+    };
+    int n = sizeof(processes) / sizeof(processes[0]);
+
+    printf("Scheduling using Shortest Job First (SJF) algorithm:\n");
+    scheduleSJF(processes, n);
+
+    return 0;
+}
