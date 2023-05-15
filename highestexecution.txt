@@ -1,0 +1,100 @@
+#include <stdio.h>
+#include <stdlib.h>
+
+#define MAX_SIZE 100
+
+typedef struct {
+    int pid;
+    int priority;
+} Process;
+
+typedef struct {
+    Process data[MAX_SIZE];
+    int size;
+} Priority_Queue;
+
+void initialize(Priority_Queue *queue) {
+    queue->size = 0;
+}
+
+int is_empty(Priority_Queue *queue) {
+    return (queue->size == 0);
+}
+
+int is_full(Priority_Queue *queue) {
+    return (queue->size == MAX_SIZE);
+}
+
+void enqueue(Priority_Queue *queue, Process process) {
+    if (is_full(queue)) {
+        printf("Error: Queue is full\n");
+        return;
+    }
+
+    int i;
+    for (i = queue->size - 1; i >= 0; i--) {
+        if (process.priority > queue->data[i].priority)
+            queue->data[i + 1] = queue->data[i];
+        else
+            break;
+    }
+
+    queue->data[i + 1] = process;
+    queue->size++;
+}
+
+Process dequeue(Priority_Queue *queue) {
+    if (is_empty(queue)) {
+        printf("Error: Queue is empty\n");
+        Process empty_process = { -1, -1 };
+        return empty_process;
+    }
+
+    Process dequeued_process = queue->data[0];
+    int i;
+    for (i = 1; i < queue->size; i++)
+        queue->data[i - 1] = queue->data[i];
+
+    queue->size--;
+    return dequeued_process;
+}
+
+void print_queue(Priority_Queue *queue) {
+    if (is_empty(queue)) {
+        printf("Queue is empty\n");
+        return;
+    }
+
+    printf("PID\tPriority\n");
+    for (int i = 0; i < queue->size; i++)
+        printf("%d\t%d\n", queue->data[i].pid, queue->data[i].priority);
+}
+
+int main() {
+    Priority_Queue queue;
+    initialize(&queue);
+
+    // Example usage: Enqueue processes
+    Process p1 = { 1, 3 };
+    Process p2 = { 2, 1 };
+    Process p3 = { 3, 2 };
+
+    enqueue(&queue, p1);
+    enqueue(&queue, p2);
+    enqueue(&queue, p3);
+
+    // Print the queue
+    printf("Initial Queue:\n");
+    print_queue(&queue);
+
+    // Dequeue the process with the highest priority
+    Process next_process = dequeue(&queue);
+    printf("\nNext process to execute:\n");
+    printf("PID: %d, Priority: %d\n", next_process.pid, next_process.priority);
+
+    // Print the updated queue
+    printf("\nUpdated Queue:\n");
+    print_queue(&queue);
+
+    return 0;
+}
